@@ -26,6 +26,7 @@ interface Course {
 }
 
 type CountryCode = "IN" | "US"
+type SortOption = "default" | "price-asc" | "price-desc"
 
 interface CoursesGridProps {
     sectionTitle: string
@@ -206,6 +207,7 @@ export default function CoursesGrid({
     const [country, setCountry] = useState<CountryCode | null>(null)
     const [countryLoading, setCountryLoading] = useState(true)
     const [countryError, setCountryError] = useState(false)
+    const [sortOption, setSortOption] = useState<SortOption>("default")
 
     const [containerWidth, setContainerWidth] = useState(0)
 
@@ -369,6 +371,27 @@ export default function CoursesGrid({
               ? 2
               : 1
 
+    const canSortByPrice =
+        country !== null && !countryLoading && !countryError
+    const sortedCourses = [...courses]
+
+    if (canSortByPrice && sortOption !== "default") {
+        sortedCourses.sort((firstCourse, secondCourse) => {
+            const firstPrice =
+                country === "IN"
+                    ? firstCourse.pricePaise
+                    : firstCourse.priceUsdCents
+            const secondPrice =
+                country === "IN"
+                    ? secondCourse.pricePaise
+                    : secondCourse.priceUsdCents
+
+            return sortOption === "price-asc"
+                ? firstPrice - secondPrice
+                : secondPrice - firstPrice
+        })
+    }
+
     const rootStyle: CSSProperties = {
         ...styles.section,
         ...style,
@@ -475,13 +498,35 @@ export default function CoursesGrid({
                 </div>
             )}
 
+            <div style={styles.sortControls}>
+                <label style={styles.sortLabel}>
+                    Sort by price
+                    <select
+                        value={canSortByPrice ? sortOption : "default"}
+                        onChange={(event) =>
+                            setSortOption(event.target.value as SortOption)
+                        }
+                        disabled={!canSortByPrice}
+                        style={{
+                            ...styles.sortSelect,
+                            cursor: canSortByPrice ? "pointer" : "not-allowed",
+                            opacity: canSortByPrice ? 1 : 0.6,
+                        }}
+                    >
+                        <option value="default">Default order</option>
+                        <option value="price-asc">Low to high</option>
+                        <option value="price-desc">High to low</option>
+                    </select>
+                </label>
+            </div>
+
             <div
                 style={{
                     ...styles.grid,
                     gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
                 }}
             >
-                {courses.map((course) => (
+                {sortedCourses.map((course) => (
                     <CourseCard
                         key={course.courseCode}
                         course={course}
@@ -533,6 +578,32 @@ const styles = {
         minWidth: 0,
         padding: "0 7px 7px 0",
         boxSizing: "border-box" as const,
+    },
+    sortControls: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        flexWrap: "wrap" as const,
+        gap: "10px",
+        margin: "0 7px 20px 0",
+    },
+    sortLabel: {
+        display: "flex",
+        alignItems: "center",
+        flexWrap: "wrap" as const,
+        gap: "10px",
+        fontSize: "14px",
+        fontWeight: 800,
+    },
+    sortSelect: {
+        padding: "9px 12px",
+        border: "2px solid #172033",
+        borderRadius: "6px",
+        backgroundColor: "#fffdf7",
+        boxShadow: "3px 3px 0 #172033",
+        color: "#172033",
+        font: "inherit",
+        fontWeight: 700,
     },
 
     card: {
