@@ -1,4 +1,3 @@
-// ── 1. Imports ──
 import {
     useEffect,
     useLayoutEffect,
@@ -8,25 +7,11 @@ import {
 } from "react"
 import { addPropertyControls, ControlType } from "framer"
 
-/*
- * Table of contents
- * 1. Imports
- * 2. Constants
- * 3. Types
- * 4. Pure helper functions
- * 5. Small presentational subcomponents
- * 6. Main component
- * 7. Property controls
- * 8. Styles
- */
-
-// ── 2. Constants ──
 const COURSES_URL =
     "https://syncsphere-hiv6.onrender.com/assignment/course-data"
 const COUNTRY_URL =
     "https://syncsphere-hiv6.onrender.com/assignment/country-code"
 
-// ── 3. Types ──
 interface Course {
     courseName: string
     courseCode: string
@@ -48,7 +33,6 @@ interface CoursesGridProps {
     style?: CSSProperties
 }
 
-// ── 4. Pure helper functions ──
 function isValidCourse(value: unknown): value is Course {
     if (typeof value !== "object" || value === null) {
         return false
@@ -106,7 +90,6 @@ function formatPrice(
     return "Price unavailable"
 }
 
-// ── 5. Small presentational subcomponents ──
 function CourseCard({
     course,
     country,
@@ -200,10 +183,7 @@ function SkeletonCard() {
     )
 }
 
-// ── 6. Main component ──
 /**
- * Skillpath courses loaded from the supplied assignment API.
- *
  * @framerIntrinsicWidth 1120
  * @framerIntrinsicHeight 520
  * @framerSupportedLayoutWidth any-prefer-fixed
@@ -214,13 +194,9 @@ export default function CoursesGrid({
     accentColor = "#6366F1",
     style,
 }: CoursesGridProps) {
-    // Prevents asynchronous requests from updating state after unmount.
     const isMounted = useRef(true)
-    // Prevents duplicate concurrent requests for the courses resource.
     const coursesRequestInFlight = useRef(false)
-    // Prevents duplicate concurrent requests for the country resource.
     const countryRequestInFlight = useRef(false)
-    // Provides the rendered container whose width determines the column count.
     const containerRef = useRef<HTMLElement | null>(null)
 
     const [courses, setCourses] = useState<Course[]>([])
@@ -231,10 +207,8 @@ export default function CoursesGrid({
     const [countryLoading, setCountryLoading] = useState(true)
     const [countryError, setCountryError] = useState(false)
 
-    // Stores the measured container width used to derive the responsive columns.
     const [containerWidth, setContainerWidth] = useState(0)
 
-    // These fetchers intentionally share the same readable request lifecycle.
     async function loadCourses() {
         if (!isMounted.current || coursesRequestInFlight.current) {
             return
@@ -360,7 +334,6 @@ export default function CoursesGrid({
         }
     }, [])
 
-    // useLayoutEffect measures before paint to avoid flashing the wrong column count.
     useLayoutEffect(() => {
         const container = containerRef.current
 
@@ -402,7 +375,6 @@ export default function CoursesGrid({
         position: "relative",
     }
 
-    // State: loading
     if (coursesLoading) {
         return (
             <section
@@ -427,7 +399,6 @@ export default function CoursesGrid({
         )
     }
 
-    // State: error
     if (coursesError) {
         return (
             <section ref={containerRef} style={rootStyle}>
@@ -451,7 +422,6 @@ export default function CoursesGrid({
         )
     }
 
-    // State: zero results
     if (courses.length === 0) {
         return (
             <section ref={containerRef} style={rootStyle}>
@@ -461,7 +431,6 @@ export default function CoursesGrid({
         )
     }
 
-    // State: success
     return (
         <section ref={containerRef} style={rootStyle}>
             <h2 style={styles.sectionTitle}>{sectionTitle}</h2>
@@ -526,7 +495,6 @@ export default function CoursesGrid({
     )
 }
 
-// ── 7. Property controls ──
 addPropertyControls(CoursesGrid, {
     sectionTitle: {
         type: ControlType.String,
@@ -540,9 +508,7 @@ addPropertyControls(CoursesGrid, {
     },
 })
 
-// ── 8. Styles ──
 const styles = {
-    // Layout
     section: {
         position: "relative" as const,
         width: "100%",
@@ -569,7 +535,6 @@ const styles = {
         boxSizing: "border-box" as const,
     },
 
-    // Card content
     card: {
         width: "100%",
         minWidth: 0,
@@ -629,14 +594,12 @@ const styles = {
         color: "#ffffff",
     },
 
-    // Loading
     skeleton: {
         height: "14px",
         borderRadius: "6px",
         backgroundColor: "#e5e7eb",
     },
 
-    // Interactive and status states
     retryButton: {
         border: "2px solid #172033",
         borderRadius: "6px",
