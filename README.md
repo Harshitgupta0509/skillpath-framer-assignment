@@ -102,4 +102,4 @@ The published component was tested across repeated API requests to verify:
 
 ## AI usage
 
-OpenAI Codex was used as a development assistant for code review, edge-case analysis, testing, documentation, and Framer integration. The implementation was reviewed and organized so its behavior can be explained line by line.
+Chatgpt and codex  was used as a development assistant for code review, edge-case analysis, testing, documentation, and Framer integration. The implementation was reviewed and organized so its behavior can be explained line by line.
